@@ -1,8 +1,5 @@
-// import {MOVIE_API_BASE_URL, MOVIE_API_KEY} from "./constants";
+import {MOVIE_API_BASE_URL, MOVIE_API_KEY} from "./constants";
 import {Movie} from "./model/model";
-
-const MOVIE_API_KEY = "4b9bed2c7974d3e2ed5c2879df2fb7e2";
-const MOVIE_API_BASE_URL = "https://api.themoviedb.org/3/";
 
 export default class MovieApi {
     static async executeApiCall(path: string, params:[[string, string | number]]) : Promise<Response> {
@@ -17,7 +14,7 @@ export default class MovieApi {
         }
     }
 
-    static async getTrendingMovies(pageNumber: number = 1) : Promise<Array<Movie>> {
+    static async getPopularMovies(pageNumber: number = 1) : Promise<Movie[]> {
         try {
             const response = await this.executeApiCall("movie/popular", [["page", pageNumber]]);
             const responseText = await response.text()
