@@ -1,0 +1,12 @@
+jul 23 
+
+19:10
+	just realized this won't take long at all. 
+	create-react-native-app didn't work right away, check and reinstall tools
+
+19:22
+	create-react-native-app MovieBase successful
+	trouble getting simulator working. it's starting the beta simulator which doesn't work.
+	
+19:35 
+	take a break for now.
