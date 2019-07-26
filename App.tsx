@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Linking } from 'react-native';
 import {LinearGradient} from "expo-linear-gradient"
 import MovieApi from "./data/api"
 import {Movie} from "./data/model/model"
@@ -13,7 +13,11 @@ interface IState {
 const Title = () => (
   <View style={{marginVertical:32, paddingHorizontal:16}}>
     <Text style={{fontSize:48}}>Popular Movies</Text>
-    <Text style={{fontSize:12, color:"#000A"}}>Powered by The Movie Database</Text>
+    <TouchableOpacity onPress={()=>Linking.openURL("https://www.themoviedb.org/")}>
+      <Text style={{fontSize:12, color:"#000A"}}>
+        Powered by <Text style={{textDecorationLine:"underline"}}>The Movie Database</Text>
+      </Text>
+    </TouchableOpacity>
   </View>
 )
 
