@@ -1,5 +1,5 @@
 import {MOVIE_API_BASE_URL, MOVIE_API_KEY} from "./constants";
-import {Movie} from "./model/model";
+import { PopularMoviesResponse, Movie} from "./model/model";
 
 export default class MovieApi {
     static async executeApiCall(path: string, params:[[string, string | number]]) : Promise<Response> {
@@ -18,8 +18,8 @@ export default class MovieApi {
         try {
             const response = await this.executeApiCall("movie/popular", [["page", pageNumber]]);
             const responseText = await response.text()
-            const responseJson = JSON.parse(responseText);
-            const movies = responseJson.results.map(movieObj=>(new Movie(movieObj)));
+            const responseJson = JSON.parse(responseText) as PopularMoviesResponse;
+            const movies = responseJson.results;
             return movies;
         } catch (err) {
             console.warn(err)

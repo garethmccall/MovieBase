@@ -1,12 +1,15 @@
-export class Movie {
+
+export interface PopularMoviesResponse {
+    page: number;
+    results: Movie[];
+    total_results: number;
+    total_pages: number;
+}
+
+
+export interface Movie {
     id: number;
     title: string;
     overview: string;
     release_date: string;
-
-    constructor(data: any) {
-        for (let key in data) {
-            this[key] = data[key]
-        }
-    }
 }
