@@ -1,12 +1,13 @@
 import React from "react";
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Linking } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { Title, ListItem } from "./components/mainScreenComps";
+import { StyleSheet, View } from "react-native";
+
+import { ListItem, MovieList, Title } from "./components/mainScreenComps";
+
 import MovieApi from "./data/api";
-import { Movie } from "./data/model/model";
+import { IMovieInfo } from "./data/model/model";
 
 interface IState {
-    movies: Movie[];
+    movies: IMovieInfo[];
 }
 
 export default class App extends React.Component<{}, IState> {
@@ -28,33 +29,21 @@ export default class App extends React.Component<{}, IState> {
             });
     }
 
-    _renderItem = ({ item }: { item: Movie }) => <ListItem item={item} />;
+    keyExtractor = (item: IMovieInfo, index: number) => item.id.toString();
+
+    renderItem = ({ item }: { item: IMovieInfo }) => <ListItem item={item} />;
 
     render() {
         return (
             <View style={styles.container}>
                 <Title />
-                <View style={{ flex: 1, backgroundColor: "white" }}>
-                    <FlatList<Movie>
-                        style={{ flex: 1 }}
-                        contentContainerStyle={{
-                            paddingTop: 32,
-                            paddingHorizontal: 16,
-                            paddingBottom: 60
-                        }}
-                        data={this.state.movies}
-                        keyExtractor={(item) => item.id.toString()}
-                        renderItem={this._renderItem}
-                    />
-                    <LinearGradient
-                        colors={["#ffff", "#fff0"]}
-                        style={{ position: "absolute", top: 0, left: 0, right: 0, height: 32 }}
-                    />
-                    <LinearGradient
-                        colors={["#fff0", "#ffff"]}
-                        style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 60 }}
-                    />
-                </View>
+                <MovieList
+                    style={{ flex: 1, backgroundColor: "white" }}
+                    contentContainerStyle={styles.movieListContent}
+                    data={this.state.movies}
+                    keyExtractor={this.keyExtractor}
+                    renderItem={this.renderItem}
+                />
             </View>
         );
     }
@@ -62,8 +51,13 @@ export default class App extends React.Component<{}, IState> {
 
 const styles = StyleSheet.create({
     container: {
+        backgroundColor: "#fff",
         flex: 1,
-        marginTop: 32,
-        backgroundColor: "#fff"
+        marginTop: 32
+    },
+    movieListContent: {
+        paddingBottom: 60,
+        paddingHorizontal: 16,
+        paddingTop: 32
     }
 });
