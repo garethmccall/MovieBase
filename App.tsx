@@ -1,12 +1,14 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 
-import { ListItem, MovieList, Title } from "./components/mainScreenComps";
+import { MovieList, Title } from "./components/mainScreenComps";
 
 import MovieApi from "./data/api";
 import { IMovieInfo } from "./data/model/model";
 
 interface IState {
+    currentPage: number;
+    loading: boolean;
     movies: IMovieInfo[];
 }
 
@@ -14,24 +16,34 @@ export default class App extends React.Component<{}, IState> {
     constructor(props) {
         super(props);
         this.state = {
+            currentPage: 1,
+            loading: false,
             movies: []
         };
     }
 
     componentWillMount() {
-        MovieApi.getPopularMovies(1)
-            .then((movies) => {
-                this.setState({ movies });
-            })
-            .catch((err) => {
-                console.warn(err);
-                this.setState({ movies: [] });
-            });
+        this.loadMovies();
     }
 
-    keyExtractor = (item: IMovieInfo, index: number) => item.id.toString();
+    loadMovies = async (pageNumber: number = 1) => {
+        try {
+            this.setState({ loading: true });
+            const moreMovies = await MovieApi.getPopularMovies(pageNumber);
+            this.setState((state) => ({
+                currentPage: pageNumber,
+                movies: [...state.movies, ...moreMovies]
+            }));
+        } catch (err) {
+            console.warn("couldn't load anymore movies");
+        } finally {
+            this.setState({ loading: false });
+        }
+    };
 
-    renderItem = ({ item }: { item: IMovieInfo }) => <ListItem item={item} />;
+    loadMoreMovies = () => {
+        this.loadMovies(this.state.currentPage + 1);
+    };
 
     render() {
         return (
@@ -41,8 +53,8 @@ export default class App extends React.Component<{}, IState> {
                     style={{ flex: 1, backgroundColor: "white" }}
                     contentContainerStyle={styles.movieListContent}
                     data={this.state.movies}
-                    keyExtractor={this.keyExtractor}
-                    renderItem={this.renderItem}
+                    onEndReached={this.loadMoreMovies}
+                    loading={this.state.loading}
                 />
             </View>
         );

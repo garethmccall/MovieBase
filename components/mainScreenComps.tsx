@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList, Linking, ListRenderItem, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, Linking, Text, TouchableOpacity, View } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -19,7 +19,7 @@ export const Title = () => (
     </View>
 );
 
-export const ListItem = ({ item }: { item: IMovieInfo }) => {
+const ListItem = ({ item }: { item: IMovieInfo }) => {
     const releaseDate = new Date(item.release_date);
     const dateFormatOptions = {
         day: "numeric",
@@ -46,17 +46,52 @@ export const ListItem = ({ item }: { item: IMovieInfo }) => {
     );
 };
 
+const keyExtractor = (item: IMovieInfo, index: number) => `movieRow_${index}_${item.id.toString()}`;
+
+const ListFooter = () => (
+    <View
+        style={{
+            alignItems: "center",
+            backgroundColor: "white",
+            height: 60,
+            justifyContent: "center"
+        }}
+    >
+        <Text style={{ fontSize: 32 }}>🎬✨</Text>
+        <Text>That's all the movies!</Text>
+    </View>
+);
+
+const LoadingFooter = () => (
+    <View
+        style={{
+            alignItems: "center",
+            backgroundColor: "white",
+            height: 60,
+            justifyContent: "center"
+        }}
+    >
+        <ActivityIndicator size={"large"} color={"#0004"} />
+    </View>
+);
+
 interface IPropsMovieList {
-    data: IMovieInfo[];
-    keyExtractor: (item: IMovieInfo, index: number) => string;
-    renderItem: ListRenderItem<IMovieInfo>;
-    style: object;
     contentContainerStyle: object;
+    data: IMovieInfo[];
+    onEndReached: ((info: { distanceFromEnd: number }) => void) | null;
+    style: object;
+    loading: boolean;
 }
 
 export const MovieList = (props: IPropsMovieList) => (
     <View style={props.style}>
-        <FlatList<IMovieInfo> {...props} style={{ flex: 1 }} />
+        <FlatList<IMovieInfo>
+            {...props}
+            keyExtractor={keyExtractor}
+            ListFooterComponent={props.loading ? LoadingFooter : ListFooter}
+            renderItem={ListItem}
+            style={{ flex: 1 }}
+        />
         <LinearGradient
             colors={["#ffff", "#fff0"]}
             style={{ position: "absolute", top: 0, left: 0, right: 0, height: 32 }}
