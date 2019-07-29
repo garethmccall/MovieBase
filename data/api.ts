@@ -1,35 +1,30 @@
 import { MOVIE_API_BASE_URL, MOVIE_API_KEY } from "./constants";
 import { IMovieInfo } from "./model/model";
 
-class MovieAPIRequest {
-    path: string;
-    params: MovieAPIRequestParameter[];
+interface IMovieAPIRequestParameters {
+    [key: string]: string | number;
+}
 
-    constructor(path: string, params: MovieAPIRequestParameter[] = []) {
+class MovieAPIGetRequest {
+    private path: string;
+    private urlParams: IMovieAPIRequestParameters;
+
+    constructor(path: string, params: IMovieAPIRequestParameters = {}) {
         this.path = path;
-        this.params = [MovieAPIRequestParameter.create({ api_key: MOVIE_API_KEY })].concat(params);
+        this.urlParams = {
+            api_key: MOVIE_API_KEY,
+            ...params
+        };
     }
 
-    fetchUrl(): string {
-        const queryString = this.params.reduce(
-            (acc, param) => `${acc}&${param.key}=${param.value}`,
+    public fetchUrl(): string {
+        const queryString = Object.keys(this.urlParams).reduce(
+            (acc, key) => `${acc}&${key}=${this.urlParams[key]}`,
             "?"
         );
         const getUrl = `${MOVIE_API_BASE_URL}${this.path}${queryString}`;
         return getUrl;
     }
-}
-
-class MovieAPIRequestParameter {
-    static create(from: { [key: string]: string | number }): MovieAPIRequestParameter {
-        const me = new MovieAPIRequestParameter();
-        me.key = Object.keys(from)[0];
-        me.value = Object.values(from)[0];
-        return me;
-    }
-
-    key: string;
-    value: string | number;
 }
 
 interface IPopularMoviesResponse {
@@ -40,29 +35,25 @@ interface IPopularMoviesResponse {
 }
 
 export default class MovieApi {
-    static async executeApiCall(request: MovieAPIRequest): Promise<Response> {
+    public static async getPopularMovies(pageNumber: number = 1): Promise<IPopularMoviesResponse> {
+        try {
+            const request = new MovieAPIGetRequest("movie/popular", { page: pageNumber });
+            const response = await this.executeApiGet(request);
+            const responseText = await response.text();
+            const responseJson = JSON.parse(responseText) as IPopularMoviesResponse;
+            return responseJson;
+        } catch (err) {
+            console.warn(err);
+        }
+    }
+
+    private static async executeApiGet(request: MovieAPIGetRequest): Promise<Response> {
         try {
             const url = request.fetchUrl();
             const response = await fetch(url);
             return response;
         } catch (err) {
             console.warn(err);
-        }
-    }
-
-    static async getPopularMovies(pageNumber: number = 1): Promise<IMovieInfo[]> {
-        try {
-            const request = new MovieAPIRequest("movie/popular", [
-                MovieAPIRequestParameter.create({ page: pageNumber })
-            ]);
-            const response = await this.executeApiCall(request);
-            const responseText = await response.text();
-            const responseJson = JSON.parse(responseText) as IPopularMoviesResponse;
-            const movies = responseJson.results;
-            return movies;
-        } catch (err) {
-            console.warn(err);
-            return [];
         }
     }
 }

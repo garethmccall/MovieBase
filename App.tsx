@@ -8,8 +8,9 @@ import { IMovieInfo } from "./data/model/model";
 
 interface IState {
     currentPage: number;
-    loading: boolean;
     movies: IMovieInfo[];
+    numberOfPages: number;
+    loading: boolean;
 }
 
 export default class App extends React.Component<{}, IState> {
@@ -18,40 +19,27 @@ export default class App extends React.Component<{}, IState> {
         this.state = {
             currentPage: 1,
             loading: false,
-            movies: []
+            movies: [],
+            numberOfPages: 1
         };
     }
 
-    componentWillMount() {
+    public componentWillMount() {
         this.loadMovies();
     }
 
-    loadMovies = async (pageNumber: number = 1) => {
-        try {
-            this.setState({ loading: true });
-            const moreMovies = await MovieApi.getPopularMovies(pageNumber);
-            this.setState((state) => ({
-                currentPage: pageNumber,
-                movies: [...state.movies, ...moreMovies]
-            }));
-        } catch (err) {
-            console.warn("couldn't load anymore movies");
-        } finally {
-            this.setState({ loading: false });
-        }
-    };
-
-    loadMoreMovies = () => {
-        this.loadMovies(this.state.currentPage + 1);
-    };
-
-    render() {
+    public render() {
         return (
-            <View style={styles.container}>
+            <View
+                style={{
+                    backgroundColor: "#fff",
+                    flex: 1,
+                    marginTop: 32
+                }}
+            >
                 <Title />
                 <MovieList
                     style={{ flex: 1, backgroundColor: "white" }}
-                    contentContainerStyle={styles.movieListContent}
                     data={this.state.movies}
                     onEndReached={this.loadMoreMovies}
                     loading={this.state.loading}
@@ -59,17 +47,30 @@ export default class App extends React.Component<{}, IState> {
             </View>
         );
     }
-}
 
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: "#fff",
-        flex: 1,
-        marginTop: 32
-    },
-    movieListContent: {
-        paddingBottom: 60,
-        paddingHorizontal: 16,
-        paddingTop: 32
-    }
-});
+    private loadMovies = async (pageNumber: number = 1) => {
+        if (!this.state.loading) {
+            this.setState({ loading: true });
+            try {
+                const response = await MovieApi.getPopularMovies(pageNumber);
+                this.setState((state) => ({
+                    currentPage: response.page,
+                    movies: [...state.movies, ...response.results],
+                    numberOfPages: response.total_pages
+                }));
+            } catch (err) {
+                console.warn("couldn't load anymore movies :(");
+                this.setState((state) => ({ currentPage: state.numberOfPages }));
+            } finally {
+                this.setState({ loading: false });
+            }
+        }
+    };
+
+    private loadMoreMovies = () => {
+        if (!this.state.loading && this.state.currentPage < this.state.numberOfPages) {
+            console.log("bottom reached, loading page " + (this.state.currentPage + 1));
+            this.loadMovies(this.state.currentPage + 1);
+        }
+    };
+}

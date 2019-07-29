@@ -3,9 +3,9 @@
     "extends": ["tslint:latest", "tslint-react", "tslint-config-prettier"],
     "jsRules": {},
     "rules": {
-        "member-access": false,
         "max-classes-per-file": false,
-        "no-console": false
+        "no-console": false,
+        "object-literal-sort-keys": false
     },
     "rulesDirectory": []
 }

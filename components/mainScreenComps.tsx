@@ -3,23 +3,24 @@ import { ActivityIndicator, FlatList, Linking, Text, TouchableOpacity, View } fr
 
 import { LinearGradient } from "expo-linear-gradient";
 
+import { MARGIN_SIZE, SCREEN_FOOTER_HEIGHT } from "../data/constants";
 import { IMovieInfo } from "../data/model/model";
+import { Container, Typography } from "./baseComps";
 
 const OpenTMDB = () => Linking.openURL("https://www.themoviedb.org/");
 
 export const Title = () => (
-    <View style={{ marginVertical: 32, paddingHorizontal: 16 }}>
-        <Text style={{ fontSize: 48 }}>Popular Movies</Text>
+    <Container.ScreenHeader>
+        <Typography.Title1>Popular Movies</Typography.Title1>
         <TouchableOpacity onPress={OpenTMDB}>
-            <Text style={{ fontSize: 12, color: "#000A" }}>
-                {`Powered by `}
-                <Text style={{ textDecorationLine: "underline" }}>The Movie Database</Text>
-            </Text>
+            <Typography.Legal style={{ color: "#000A" }}>
+                Powered by <Typography.Link>The Movie Database</Typography.Link>
+            </Typography.Legal>
         </TouchableOpacity>
-    </View>
+    </Container.ScreenHeader>
 );
 
-const ListItem = ({ item }: { item: IMovieInfo }) => {
+const MovieListItem = ({ item }: { item: IMovieInfo }) => {
     const releaseDate = new Date(item.release_date);
     const dateFormatOptions = {
         day: "numeric",
@@ -28,55 +29,31 @@ const ListItem = ({ item }: { item: IMovieInfo }) => {
     };
     const releaseDateFormatted = releaseDate.toLocaleDateString("en-CA", dateFormatOptions);
     return (
-        <View
-            style={{
-                borderColor: "black",
-                borderWidth: 1,
-                paddingHorizontal: 16,
-                paddingVertical: 8
-            }}
-        >
-            <Text style={{ fontSize: 24 }} numberOfLines={1}>
-                {item.title}
-            </Text>
-            <Text style={{ fontSize: 14, marginTop: 4, color: "#000A" }}>
+        <Container.ListItem>
+            <Typography.Title4 numberOfLines={1}>{item.title}</Typography.Title4>
+            <Typography.Body style={{ marginTop: 4, color: "#000A" }}>
                 Released: {releaseDateFormatted}
-            </Text>
-        </View>
+            </Typography.Body>
+        </Container.ListItem>
     );
 };
 
 const keyExtractor = (item: IMovieInfo, index: number) => `movieRow_${index}_${item.id.toString()}`;
 
-const ListFooter = () => (
-    <View
-        style={{
-            alignItems: "center",
-            backgroundColor: "white",
-            height: 60,
-            justifyContent: "center"
-        }}
-    >
-        <Text style={{ fontSize: 32 }}>🎬✨</Text>
-        <Text>That's all the movies!</Text>
-    </View>
+const MovieListFooter = () => (
+    <Container.ListFooter>
+        <Typography.Title3>🎬✨</Typography.Title3>
+        <Typography.Body>Could't load anymore movies!</Typography.Body>
+    </Container.ListFooter>
 );
 
 const LoadingFooter = () => (
-    <View
-        style={{
-            alignItems: "center",
-            backgroundColor: "white",
-            height: 60,
-            justifyContent: "center"
-        }}
-    >
+    <Container.ListFooter>
         <ActivityIndicator size={"large"} color={"#0004"} />
-    </View>
+    </Container.ListFooter>
 );
 
 interface IPropsMovieList {
-    contentContainerStyle: object;
     data: IMovieInfo[];
     onEndReached: ((info: { distanceFromEnd: number }) => void) | null;
     style: object;
@@ -87,18 +64,29 @@ export const MovieList = (props: IPropsMovieList) => (
     <View style={props.style}>
         <FlatList<IMovieInfo>
             {...props}
+            contentContainerStyle={{
+                paddingBottom: 60,
+                paddingHorizontal: 16,
+                paddingTop: 32
+            }}
             keyExtractor={keyExtractor}
-            ListFooterComponent={props.loading ? LoadingFooter : ListFooter}
-            renderItem={ListItem}
+            ListFooterComponent={props.loading ? LoadingFooter : MovieListFooter}
+            renderItem={MovieListItem}
             style={{ flex: 1 }}
         />
         <LinearGradient
             colors={["#ffff", "#fff0"]}
-            style={{ position: "absolute", top: 0, left: 0, right: 0, height: 32 }}
+            style={{ position: "absolute", top: 0, left: 0, right: 0, height: MARGIN_SIZE * 4 }}
         />
         <LinearGradient
             colors={["#fff0", "#ffff"]}
-            style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 60 }}
+            style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: SCREEN_FOOTER_HEIGHT
+            }}
         />
     </View>
 );
