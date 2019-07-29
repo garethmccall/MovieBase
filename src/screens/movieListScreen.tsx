@@ -8,7 +8,8 @@ import React from "react";
 import { NavigationParams, NavigationScreenProp, NavigationState } from "react-navigation";
 
 import { Container } from "../components/baseComps";
-import { MovieList, Title } from "../components/listScreenComps";
+import { Title } from "../components/listScreenComps";
+import { MovieList } from "../components/movieList";
 
 import { IMovieInfo } from "../data/model/model";
 import MovieApi from "../data/movieApi";

@@ -5,9 +5,9 @@
 
 import { createAppContainer, createStackNavigator } from "react-navigation";
 
-import { SCREEN_BACKGROUND_COLOR } from "./data/constants";
-import MovieDetailsScreen from "./screens/movieDetailsScreen";
-import MovieListScreen from "./screens/movieListScreen";
+import { SCREEN_BACKGROUND_COLOR } from "./src/data/constants";
+import MovieDetailsScreen from "./src/screens/movieDetailsScreen";
+import MovieListScreen from "./src/screens/movieListScreen";
 
 const AppNavigator = createStackNavigator(
     {
