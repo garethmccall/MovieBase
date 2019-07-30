@@ -1,4 +1,4 @@
-import { MOVIE_API_BASE_URL, MOVIE_API_KEY } from "./constants";
+import { MOVIE_API_BASE_URL, MOVIE_API_KEY, MOVIE_API_POSTER_SIZE } from "./constants";
 import { IMovieInfo } from "./model/model";
 
 interface IMovieAPIRequestParameters {
@@ -27,6 +27,19 @@ class MovieAPIGetRequest {
     }
 }
 
+interface IConfigurationResponse {
+    images: {
+        base_url: string;
+        secure_base_url: string;
+        backdrop_sizes: string[];
+        logo_sizes: string[];
+        poster_sizes: string[];
+        profile_sizes: string[];
+        still_sizes: string[];
+    };
+    change_keys: string[];
+}
+
 interface IPopularMoviesResponse {
     page: number;
     results: IMovieInfo[];
@@ -34,26 +47,53 @@ interface IPopularMoviesResponse {
     total_pages: number;
 }
 
-export default class MovieApi {
-    public static async getPopularMovies(pageNumber: number = 1): Promise<IPopularMoviesResponse> {
+class MovieApi {
+    private moviePosterBaseURL?: string;
+
+    constructor() {
+        this.init();
+    }
+
+    public getMoviePosterUrl(movie: IMovieInfo) {
+        if (this.moviePosterBaseURL) {
+            return `${this.moviePosterBaseURL}${MOVIE_API_POSTER_SIZE}${movie.poster_path}`;
+        }
+        return null;
+    }
+
+    public async getPopularMovies(pageNumber: number = 1): Promise<IPopularMoviesResponse> {
         try {
-            const request = new MovieAPIGetRequest("movie/popular", { page: pageNumber });
+            const request = new MovieAPIGetRequest("/movie/popular", { page: pageNumber });
             const response = await this.executeApiGet(request);
             const responseText = await response.text();
             const responseJson = JSON.parse(responseText) as IPopularMoviesResponse;
             return responseJson;
         } catch (err) {
-            console.warn(err);
+            console.warn(`could not parse popular movies API response: ${err}`);
         }
     }
 
-    private static async executeApiGet(request: MovieAPIGetRequest): Promise<Response> {
+    private async executeApiGet(request: MovieAPIGetRequest): Promise<Response> {
         try {
             const url = request.fetchUrl();
             const response = await fetch(url);
             return response;
         } catch (err) {
-            console.warn(err);
+            console.warn(`could not execute API request ${request.fetchUrl}: ${err}`);
+        }
+    }
+
+    private async init() {
+        try {
+            const configurationRequest = new MovieAPIGetRequest("/configuration");
+            const configurationResponse = await this.executeApiGet(configurationRequest);
+            const configurationText = await configurationResponse.text();
+            const configurationJson = JSON.parse(configurationText) as IConfigurationResponse;
+            this.moviePosterBaseURL = configurationJson.images.secure_base_url;
+        } catch (err) {
+            console.warn(`could not get base URL for movie posters: ${err}`);
         }
     }
 }
+
+export default new MovieApi();
