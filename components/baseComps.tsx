@@ -1,20 +1,16 @@
+/**
+ * BaseComps
+ * Set of basic, common, pre-styled components for use everywhere
+ */
+
 import React from "react";
-import {
-    Dimensions,
-    Image,
-    ImageProps,
-    Text,
-    TextProps,
-    View,
-    ViewProps,
-    StatusBar
-} from "react-native";
+import { Dimensions, Image, ImageProps, StatusBar, Text, View } from "react-native";
 
 import {
     MARGIN_SIZE,
     MOVIE_POSTER_ASPECT_RATIO,
-    SCREEN_FOOTER_HEIGHT,
     SCREEN_BACKGROUND_COLOR,
+    SCREEN_FOOTER_HEIGHT,
     TEXT_COLOR_ACCENT,
     TEXT_COLOR_PRIMARY
 } from "../data/constants";

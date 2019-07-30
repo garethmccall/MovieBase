@@ -1,3 +1,8 @@
+/**
+ * Model
+ * Right now we just have one entity in our model: IMovieInfo
+ */
+
 export interface IMovieInfo {
     id: number;
     title: string;

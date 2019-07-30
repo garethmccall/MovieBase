@@ -1,3 +1,8 @@
+/**
+ * DateUtils
+ * Provides convenience functions for parsing and formatting dates
+ */
+
 import { IMovieInfo } from "../data/model/model";
 
 export default class DateUtils {
