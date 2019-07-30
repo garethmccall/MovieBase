@@ -3,13 +3,14 @@ import { ScrollView, View } from "react-native";
 import { NavigationParams, NavigationScreenProp, NavigationState } from "react-navigation";
 
 import { Container, Images, Typography } from "../components/baseComps";
-import { BackButton } from "../components/detailScreenComps";
+import { BackButton, MovieReleaseDate } from "../components/detailScreenComps";
 
 import MovieApi from "../data/api";
 import {
     MARGIN_SIZE,
     MOVIE_POSTER_ASPECT_RATIO,
-    MOVIE_POSTER_DETAIL_SIZE
+    MOVIE_POSTER_DETAIL_SIZE,
+    TEXT_COLOR_ACCENT
 } from "../data/constants";
 import { IMovieInfo } from "../data/model/model";
 
@@ -34,7 +35,7 @@ export default class MovieDetailsScreen extends React.Component<IProps, {}> {
                 </Container.ScreenNavigationBar>
                 <Container.ScreenHeader>
                     <Typography.Title1>{this.movie.title}</Typography.Title1>
-                    <Typography.Title5>Released {this.movie.release_date}</Typography.Title5>
+                    <MovieReleaseDate movie={this.movie} />
                 </Container.ScreenHeader>
                 {/* use the ScrollView here as we're not displaying a lot of items. we just want to accomodate small phones in case the text overflows */}
                 <ScrollView alwaysBounceVertical={false} indicatorStyle={"white"}>

@@ -22,6 +22,7 @@ import {
     TEXT_COLOR_ACCENT
 } from "../data/constants";
 import { IMovieInfo } from "../data/model/model";
+import DateUtils from "../utils/dateUtils";
 
 const OpenTMDB = () => Linking.openURL("https://www.themoviedb.org/");
 
@@ -37,19 +38,6 @@ export const Title = () => (
     </Container.ScreenHeader>
 );
 
-const MoviePosterImage = ({ movie, size, style }) => {
-    const posterUrl = MovieApi.getMoviePosterUrl(movie);
-    if (posterUrl) {
-        return (
-            <Image
-                style={{ width: size, height: size * MOVIE_POSTER_ASPECT_RATIO }}
-                source={{ uri: posterUrl }}
-            />
-        );
-    }
-    return null;
-};
-
 const MovieListItem = ({
     item,
     onPress
@@ -57,13 +45,6 @@ const MovieListItem = ({
     item: IMovieInfo;
     onPress: (movieInfo: IMovieInfo) => void;
 }) => {
-    const releaseDate = new Date(item.release_date);
-    const dateFormatOptions = {
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-    };
-    const releaseDateFormatted = releaseDate.toLocaleDateString("en-CA", dateFormatOptions);
     const moviePosterUri = MovieApi.getMoviePosterUrl(item);
     const pressHandler = () => {
         onPress(item);
@@ -89,7 +70,7 @@ const MovieListItem = ({
                         <Typography.Body
                             style={{ marginTop: MARGIN_SIZE, color: TEXT_COLOR_ACCENT }}
                         >
-                            Released: {releaseDateFormatted}
+                            Released: {DateUtils.getFormattedReleaseDate(item)}
                         </Typography.Body>
                     </View>
                 </View>
@@ -109,7 +90,7 @@ const MovieListFooter = () => (
 
 const LoadingFooter = () => (
     <Container.ListFooter>
-        <ActivityIndicator size={"large"} color={"#fff4"} />
+        <ActivityIndicator size={"large"} color={"#ffff"} />
     </Container.ListFooter>
 );
 

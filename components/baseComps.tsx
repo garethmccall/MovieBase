@@ -111,7 +111,7 @@ export class Container {
             style={[
                 {
                     alignItems: "center",
-                    height: SCREEN_FOOTER_HEIGHT,
+                    height: SCREEN_FOOTER_HEIGHT * 2,
                     justifyContent: "center"
                 },
                 props.style
