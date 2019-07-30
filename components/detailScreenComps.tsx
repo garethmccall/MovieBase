@@ -55,10 +55,11 @@ export const BackButton = ({ onPress }) =>
  * @param {IMovieInfo} props.movie - the movie to show details for
  */
 export const MovieDetails = ({ movie }) => {
-    const posterUrl = MovieApi.getMoviePosterUrl(this.movie);
+    const posterUrl = MovieApi.getMoviePosterUrl(movie);
     return (
         <ScrollView style={{ flex: 1 }} alwaysBounceVertical={false} indicatorStyle={"white"}>
-            <View style={{ padding: MARGIN_SIZE * 4, flexDirection: "row", flexWrap: "wrap" }}>
+            <View style={{ padding: MARGIN_SIZE * 4, flexDirection: "row" }}>
+                {/* TODO: figure out a way to wrap the text around the image */}
                 <Typography.Body style={{ flex: 1 }}>{movie.overview}</Typography.Body>
                 {posterUrl && (
                     <Images.MoviePoster

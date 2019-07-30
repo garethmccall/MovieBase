@@ -102,7 +102,6 @@ export default class MovieListScreen extends React.Component<IProps, IState> {
      */
     private loadMoreMovies = () => {
         if (!this.state.loading && this.state.currentPage < this.state.numberOfPages) {
-            console.log("bottom reached, loading page " + (this.state.currentPage + 1));
             this.loadMovies(this.state.currentPage + 1);
         }
     };
