@@ -4,16 +4,21 @@
  */
 
 import React from "react";
-import { Dimensions, Image, ImageProps, StatusBar, Text, View } from "react-native";
+import { Dimensions, Image, ImageStyle, StatusBar, StyleProp, Text, View } from "react-native";
+
+import { observer } from "mobx-react";
 
 import {
     MARGIN_SIZE,
+    MOVIE_API_POSTER_SIZE,
     MOVIE_POSTER_ASPECT_RATIO,
     SCREEN_BACKGROUND_COLOR,
     SCREEN_FOOTER_HEIGHT,
     TEXT_COLOR_ACCENT,
     TEXT_COLOR_PRIMARY
 } from "../data/constants";
+import { IMovieInfo } from "../data/model/model";
+import MovieApi from "../data/movieApi";
 
 const d = Dimensions.get("screen");
 
@@ -129,20 +134,28 @@ export class Container {
     );
 }
 
-interface IMoviePosterProps extends ImageProps {
+interface IMoviePosterProps {
     size: number;
+    movie: IMovieInfo;
+    style: StyleProp<ImageStyle>;
 }
 export class Images {
-    public static MoviePoster = (props: IMoviePosterProps) => (
-        <Image
-            style={[
-                {
-                    width: props.size * (d.width / 375),
-                    height: props.size * MOVIE_POSTER_ASPECT_RATIO * (d.width / 375)
-                },
-                props.style
-            ]}
-            source={props.source}
-        />
-    );
+    public static MoviePoster = observer((props: IMoviePosterProps) => {
+        const baseUrl = MovieApi.moviePosterBaseUrl.get();
+        const fullUrl = baseUrl
+            ? `${baseUrl}${MOVIE_API_POSTER_SIZE}${props.movie.poster_path}`
+            : "";
+        return (
+            <Image
+                style={[
+                    {
+                        width: props.size * (d.width / 375),
+                        height: props.size * MOVIE_POSTER_ASPECT_RATIO * (d.width / 375)
+                    },
+                    props.style
+                ]}
+                source={{ uri: fullUrl }}
+            />
+        );
+    });
 }

@@ -27,7 +27,7 @@ interface IState {
 }
 
 export default class MovieListScreen extends React.Component<IProps, IState> {
-    constructor(props) {
+    constructor(props: IProps) {
         super(props);
         this.state = {
             currentPage: 1,

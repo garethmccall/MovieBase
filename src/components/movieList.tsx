@@ -5,6 +5,8 @@
 import React from "react";
 import { ActivityIndicator, FlatList, TouchableHighlight, View } from "react-native";
 
+import { observer } from "mobx-react";
+
 import { LinearGradient } from "expo-linear-gradient";
 
 import DateUtils from "../utils/dateUtils";
@@ -33,7 +35,6 @@ const MovieListItem = ({
     item: IMovieInfo;
     onPress: (movieInfo: IMovieInfo) => void;
 }) => {
-    const moviePosterUri = MovieApi.getMoviePosterUrl(item);
     const pressHandler = () => {
         onPress(item);
     };
@@ -49,7 +50,7 @@ const MovieListItem = ({
                     }}
                 >
                     <Images.MoviePoster
-                        source={{ uri: moviePosterUri }}
+                        movie={item}
                         size={MOVIE_POSTER_LIST_SIZE}
                         style={{ marginRight: MARGIN_SIZE * 2 }}
                     />

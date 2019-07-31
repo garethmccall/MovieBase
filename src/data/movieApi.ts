@@ -2,8 +2,9 @@
  * MovieApi
  * Provides interfaces and functions to query the TMDB API
  */
+import { action, IObservableValue, observable } from "mobx";
 
-import { MOVIE_API_BASE_URL, MOVIE_API_KEY, MOVIE_API_POSTER_SIZE } from "./constants";
+import { MOVIE_API_BASE_URL, MOVIE_API_KEY } from "./constants";
 import { IMovieInfo } from "./model/model";
 
 /**
@@ -76,25 +77,11 @@ interface IPopularMoviesResponse {
 /**
  *  singleton pattern: define a class, create a single instance of the class, and export the instance
  */
-
 class MovieApi {
-    private moviePosterBaseURL?: string;
+    public moviePosterBaseUrl: IObservableValue<string | undefined> = observable.box(undefined);
 
-    constructor() {
+    public constructor() {
         this.init();
-    }
-
-    /**
-     * takes a movie object and returns the URL of the movie poster image on TMDB
-     * (returns null if configuration call failed or has not yet completed)
-     *
-     * @param {IMovieInfo} movie - the movie object
-     */
-    public getMoviePosterUrl(movie: IMovieInfo) {
-        if (this.moviePosterBaseURL) {
-            return `${this.moviePosterBaseURL}${MOVIE_API_POSTER_SIZE}${movie.poster_path}`;
-        }
-        return null;
     }
 
     /**
@@ -102,7 +89,7 @@ class MovieApi {
      *
      * @param {number} pageNumber - the page of results to get. returns 20 items per page
      */
-    public async getPopularMovies(pageNumber: number = 1): Promise<IPopularMoviesResponse> {
+    public async getPopularMovies(pageNumber: number = 1) {
         try {
             const request = new MovieAPIGetPopularMoviesRequest(pageNumber);
             const response = await this.executeApiGet(request);
@@ -115,11 +102,28 @@ class MovieApi {
     }
 
     /**
+     * get the configuration values from the API
+     * (right now we only care about images.secure_base_url)
+     */
+    @action
+    private getConfiguration = async () => {
+        try {
+            const configurationRequest = new MovieAPIGetConfigurationRequest();
+            const configurationResponse = await this.executeApiGet(configurationRequest);
+            const configurationText = await configurationResponse.text();
+            const configurationJson = JSON.parse(configurationText) as IConfigurationResponse;
+            this.moviePosterBaseUrl.set(configurationJson.images.secure_base_url);
+        } catch (err) {
+            console.warn(`could not get base URL for movie posters: ${err}`);
+        }
+    };
+
+    /**
      * generic API request function. takes any MovieApiGetRequest instance and attempts to fetch it
      *
      * @param {MovieApiGetRequest} request - the request to send
      */
-    private async executeApiGet(request: MovieAPIGetRequest): Promise<Response> {
+    private async executeApiGet(request: MovieAPIGetRequest) {
         try {
             const url = request.fetchUrl();
             const response = await fetch(url);
@@ -130,18 +134,10 @@ class MovieApi {
     }
 
     /**
-     * initial setup for MovieApi. gets the base URL for movie posters (needed for "getMoviePosterUrl")
+     * initial setup for MovieApi singleton.
      */
-    private async init() {
-        try {
-            const configurationRequest = new MovieAPIGetConfigurationRequest();
-            const configurationResponse = await this.executeApiGet(configurationRequest);
-            const configurationText = await configurationResponse.text();
-            const configurationJson = JSON.parse(configurationText) as IConfigurationResponse;
-            this.moviePosterBaseURL = configurationJson.images.secure_base_url;
-        } catch (err) {
-            console.warn(`could not get base URL for movie posters: ${err}`);
-        }
+    private init() {
+        this.getConfiguration();
     }
 }
 
