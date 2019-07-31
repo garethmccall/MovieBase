@@ -15,7 +15,6 @@ const OpenTMDB = () => Linking.openURL("https://www.themoviedb.org/");
  */
 export const Title = () => (
     <Container.ScreenHeader>
-        <Container.ScreenNavigationBar />
         <Typography.Title1>Popular Movies</Typography.Title1>
         <TouchableOpacity onPress={OpenTMDB}>
             <Typography.Legal>

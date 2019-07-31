@@ -5,6 +5,7 @@
  */
 
 import React from "react";
+import { StatusBar } from "react-native";
 import { NavigationParams, NavigationScreenProp, NavigationState } from "react-navigation";
 
 import { Container } from "../components/baseComps";
@@ -45,6 +46,7 @@ export default class MovieListScreen extends React.Component<IProps, IState> {
     public render() {
         return (
             <Container.ScreenContainer>
+                <StatusBar barStyle={"light-content"} />
                 <Title />
                 <MovieList
                     style={{ flex: 1 }}

@@ -5,8 +5,6 @@
 import React from "react";
 import { ActivityIndicator, FlatList, TouchableHighlight, View } from "react-native";
 
-import { observer } from "mobx-react";
-
 import { LinearGradient } from "expo-linear-gradient";
 
 import DateUtils from "../utils/dateUtils";

@@ -75,10 +75,7 @@ export class Container {
                     marginTop: MARGIN_SIZE * 8
                 }
             ]}
-        >
-            <StatusBar barStyle="light-content" />
-            {props.children}
-        </View>
+        />
     );
 
     public static ScreenNavigationBar = (props) => (
