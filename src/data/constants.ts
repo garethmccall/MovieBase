@@ -1,9 +1,11 @@
+import { TMDB_API_KEY } from "react-native-dotenv";
+
 /**
  * Constants
  * Useful constants that are needed by the app
  */
 
-export const MOVIE_API_KEY = "YOUR_API_KEY";
+export const MOVIE_API_KEY = TMDB_API_KEY;
 export const MOVIE_API_BASE_URL = "https://api.themoviedb.org/3";
 export const MOVIE_API_POSTER_SIZE = "w500";
 
